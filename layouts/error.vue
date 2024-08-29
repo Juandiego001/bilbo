@@ -1,45 +1,64 @@
-<template>
-  <v-app dark>
-    <h1 v-if="error.statusCode === 404">
-      {{ pageNotFound }}
-    </h1>
-    <h1 v-else>
-      {{ otherError }}
-    </h1>
-    <NuxtLink to="/">
-      Home page
-    </NuxtLink>
-  </v-app>
-</template>
+<template lang="pug">
+v-app
+  v-main
+    v-container(fluid fill-height)
+      v-row(justify="center")
+        v-col(cols="12" md="6" lg="4")
+          v-alert.text-center.py-7(
+            :color="errorMessage.type"
+            border="top"
+            prominent outlined)
+            v-icon.mb-5(size="96" :color="errorMessage.type")
+              | {{ errorMessage.icon }}
 
+            .text-h3 {{ errorMessage.code }}
+            .text-h6.text--secondary.mb-5 {{ errorMessage.message }}
+
+            V-btn(:color="errorMessage.type" nuxt to="/") Regresar
+
+  app-footer
+</template>
 <script>
 export default {
   name: 'EmptyLayout',
   layout: 'empty',
+
   props: {
-    error: {
-      type: Object,
-      default: null
-    }
+    error: { type: Object, default: null }
   },
+
   data () {
     return {
-      pageNotFound: '404 Not Found',
-      otherError: 'An error occurred'
+      pageNotFound: '404 Not Found.',
+      insufficientPermissions: 'Insufficient permissions.',
+      otherError: 'An error occurred.'
     }
   },
+
   head () {
-    const title =
-      this.error.statusCode === 404 ? this.pageNotFound : this.otherError
-    return {
-      title
+    const title = this.errorMessage.message
+    return { title }
+  },
+
+  computed: {
+    errorMessage () {
+      const code = this.error.statusCode
+      let type = 'error'
+      let icon = 'mdi-close-circle'
+      let message = 'error.serverErrorMessage'
+
+      if (code === 404) {
+        message = 'error.notFoundMessage'
+        type = 'info'
+        icon = 'mdi-comment-question'
+      } else if (code === 403) {
+        message = 'error.forbidenMessage'
+        type = 'warning'
+        icon = 'mdi-shield-lock'
+      }
+
+      return { type, code, icon, message }
     }
   }
 }
 </script>
-
-<style scoped>
-h1 {
-  font-size: 20px;
-}
-</style>

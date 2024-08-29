@@ -1,11 +1,9 @@
 <template lang="pug">
-v-app
-  app-menu
-  Nuxt
+nuxt
 </template>
 
 <script>
 export default {
-
+  name: 'EmptyLayout'
 }
 </script>
