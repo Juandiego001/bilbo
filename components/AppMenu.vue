@@ -1,5 +1,5 @@
 <template lang="pug">
-v-navigation-drawer(color="primary" app dark)
+v-navigation-drawer(color="primary" app dark permanent fixed)
   v-list-item
     v-list-item-content
       v-img.mx-auto(src="billos-logo.png" max-width="150px")
@@ -21,7 +21,7 @@ export default {
       {
         icon: 'mdi-food-outline',
         title: 'Pedidos',
-        path: '/orders'
+        path: '/'
       }
     ]
   })

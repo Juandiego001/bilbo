@@ -5,9 +5,9 @@ v-app
       v-row(justify="center")
         v-col(cols="12" md="6" lg="4")
           v-alert.text-center.py-7(
-            :color="errorMessage.type"
-            border="top"
-            prominent outlined)
+          :color="errorMessage.type"
+          border="top"
+          prominent outlined)
             v-icon.mb-5(size="96" :color="errorMessage.type")
               | {{ errorMessage.icon }}
 
@@ -48,7 +48,7 @@ export default {
       let message = 'error.serverErrorMessage'
 
       if (code === 404) {
-        message = 'error.notFoundMessage'
+        message = 'Page not found'
         type = 'info'
         icon = 'mdi-comment-question'
       } else if (code === 403) {

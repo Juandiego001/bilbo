@@ -1,7 +1,8 @@
 <template lang="pug">
 v-app
   app-menu
-  Nuxt
+  v-main
+    Nuxt
 </template>
 
 <script>
