@@ -19,7 +19,7 @@ v-card.mt-8(width="350px" flat)
                 v-spacer
                 v-sheet.green.rounded-lg.me-2(width=10 height=10)
                 .text-caption Ready to serve
-        
+
         v-row.px-5.py-2
           .text-body-2 Mie, Agosto 28, 2024
           v-spacer
@@ -33,7 +33,7 @@ v-card.mt-8(width="350px" flat)
           .text-subtitle-1.black--text Total
           v-spacer
           .text-subtitle-1.black--text $34000
-      
+
     v-card-footer
         .px-7.d-flex.justify-center
           v-btn.text-subtitle-1.text-capitalize Ver detalles
@@ -43,7 +43,7 @@ v-card.mt-8(width="350px" flat)
 
 <script>
 export default {
-    computed: {
+  computed: {
     headers () {
       return [
         { text: 'Items', value: 'name', align: 'start' },
@@ -61,4 +61,3 @@ export default {
   }
 }
 </script>
-
