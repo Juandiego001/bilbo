@@ -21,20 +21,38 @@ v-container
       width="50px")
   
   v-row.px-7.mb-12
-    order-card
-    order-card
-    order-card
-    order-card
-    order-card
-    order-card
-    order-card
-    order-card
-    order-card
+    template(v-for="order in orders")
+    order-card(
+      :name="order.Nombre"
+      :products="order.productos"
+      :quantity="order.cantidad"
+      :description="order.Descripcion"
+      :phone="order.Telefono"
+      :address="order.Direccion"
+      :payment_type="order['Forma de pago']"
+    )
   
 </template>
 
 <script>
 export default {
-  name: 'IndexPage'
+  name: 'IndexPage',
+  data: () => ({
+    orders: []
+  }),
+  beforeMount () {
+    this.getOrders()
+  },
+
+  methods: {
+    async getOrders () {
+      try {
+        this.orders = await this.$axios.$get('/api/pedidos')
+      } catch (err) {
+        console.log(err)
+      }
+    }
+
+  }
 }
 </script>

@@ -21,6 +21,10 @@
     "vuetify": "^2.6.10"
   },
   "devDependencies": {
-    "@nuxtjs/vuetify": "^1.12.3"
+    "@nuxtjs/eslint-config": "^12.0.0",
+    "@nuxtjs/vuetify": "^1.12.3",
+    "@vue/language-plugin-pug": "^2.1.6",
+    "eslint": "^9.10.0",
+    "eslint-plugin-vue": "^9.28.0"
   }
 }
