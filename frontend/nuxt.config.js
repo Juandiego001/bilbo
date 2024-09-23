@@ -28,7 +28,7 @@ export default {
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
     // https://go.nuxtjs.dev/vuetify
-    '@nuxtjs/vuetify',
+    '@nuxtjs/vuetify'
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -36,7 +36,7 @@ export default {
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
     // https://go.nuxtjs.dev/pwa
-    '@nuxtjs/pwa',
+    '@nuxtjs/pwa'
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -47,8 +47,8 @@ export default {
 
   proxy: {
     '/api/': {
-      target: process.env.API_URL, pathRewrite: {'^/api/': ''}
-    },
+      target: process.env.API_URL || 'http://localhost:5000', pathRewrite: { '^/api/': '' }
+    }
   },
 
   // PWA module configuration: https://go.nuxtjs.dev/pwa
