@@ -15,7 +15,7 @@ v-dialog(v-model="value" width="500")
           v-text-field(:value="details.phone" label="Teléfono" hide-details
           filled depressed readonly)
         v-col(cols="6" md="12")
-          v-text-field(:value="details.paymentType" label="Forma de pago"
+          v-text-field(:value="details.paymentMethod" label="Forma de pago"
           hide-details filled depressed readonly)
         v-col(cols="12" md="12")
           v-textarea(:value="details.description" label="Descripción"
@@ -38,7 +38,7 @@ export default {
       default: () => ({
         address: '',
         phone: '',
-        paymentType: '',
+        paymentMethod: '',
         description: ''
       })
     }

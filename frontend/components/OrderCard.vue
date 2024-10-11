@@ -75,7 +75,7 @@ export default {
       type: String,
       default: ''
     },
-    paymentType: {
+    paymentMethod: {
       type: String,
       default: ''
     }
@@ -85,7 +85,7 @@ export default {
     details: {
       phone: '',
       address: '',
-      paymentType: '',
+      paymentMethod: '',
       description: ''
     }
   }),
@@ -107,7 +107,7 @@ export default {
     getDetails () {
       this.details.phone = this.phone
       this.details.address = this.address
-      this.details.paymentType = this.paymentType
+      this.details.paymentMethod = this.paymentMethod
       this.details.description = this.description
       this.showDetails = true
     }

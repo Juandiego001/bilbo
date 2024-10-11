@@ -21,16 +21,16 @@ v-container
     width="50px")
 
   v-row.px-7.mb-12
-    order-card(v-for="order, index in orders"
+    order-card(v-if="orders.length" v-for="order, index in orders"
     :key="index"
     :index="index"
-    :name="order.Nombre"
-    :products="order.productos"
-    :quantity="order.cantidad"
-    :description="order.Descripcion.join()"
-    :phone="order.Telefono"
-    :address="order.Direccion"
-    :paymentType="order['Forma de pago']")
+    :name="order.name"
+    :products="order.products"
+    :quantity="order.quantity"
+    :description="order.description"
+    :phone="order.phone"
+    :address="order.address"
+    :paymentMethod="order.payment_method")
 
 </template>
 
@@ -49,7 +49,7 @@ export default {
   methods: {
     async getOrders () {
       try {
-        this.orders = await this.$axios.$get('/api/pedidos')
+        this.orders = (await this.$axios.$get('/api/orders/orders')).orders
       } catch (err) {
         // eslint-disable-next-line no-console
         console.log(err)
