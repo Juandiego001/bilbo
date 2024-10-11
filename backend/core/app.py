@@ -15,8 +15,8 @@ error_logger = logging.getLogger('error_logger')
 
 app = APIFlask(__name__)
 
-app.config['HOST'] = HOST = os.getenv('HOST')
-app.config['PORT'] = PORT = os.getenv('PORT')
+app.config['HOST'] = HOST = os.getenv('HOST') or 'localhost'
+app.config['PORT'] = PORT = os.getenv('PORT') or '5000'
 app.config['WHATSAPP_TOKEN'] = os.getenv('WHATSAPP_TOKEN')
 app.config['WHATSAPP_URL'] = os.getenv('WHATSAPP_URL')
 app.config['WEBHOOK_VERIFY_TOKEN'] = os.getenv('WEBHOOK_VERIFY_TOKEN')
