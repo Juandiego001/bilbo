@@ -48,7 +48,7 @@ def reply_message(data):
         response = requests.post(
             app.config['WHATSAPP_URL'],
             headers={'Content-Type': 'application/json',
-                     'Authorization': f'Bearer {app.config['WHATSAPP_TOKEN']}'},
+                     'Authorization': f"Bearer {app.config['WHATSAPP_TOKEN']}"},
             data=data)
 
         info_logger.info(f'Meta response: {response.content.decode()}')

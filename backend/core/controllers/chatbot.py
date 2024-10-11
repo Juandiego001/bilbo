@@ -19,7 +19,7 @@ def check_token(query_data):
         verify_token = query_data['verify_token']
         challenge = query_data['challenge']
 
-        if (mode == "subscribe" and verify_token == app['WEBHOOK_VERIFY_TOKEN']):
+        if (mode == "subscribe" and verify_token == app.config['WEBHOOK_VERIFY_TOKEN']):
             return challenge
         else:
             raise Exception()
