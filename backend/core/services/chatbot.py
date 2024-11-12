@@ -1,7 +1,7 @@
 import json
 import re
 import requests
-from core.app import app, chat, info_logger, error_logger, orders
+from core.app import app, chat, info_logger, error_logger, orders, ai_status
 
 
 def ai_process_message(message: str):
@@ -22,6 +22,9 @@ def ai_process_message(message: str):
 
             try:
                 recibo_json = json.loads(json_string)
+                '''Added an id to identify the order'''
+                recibo_json['id'] = len(orders) + 1
+                recibo_json['status'] = 'PENDING'
                 info_logger.info(f'JSON generado: {json_string}')
             except json.JSONDecodeError as e:
                 error_logger.exception(f'Error al decodificar JSON: {e}')
@@ -64,6 +67,10 @@ def reply_message(data):
 def manage_flow(message: str, number: str, message_id: str, name: str):
     '''Manage flow from a received'''
 
+    # Si la IA no está activa se envía un mensaje vacío
+    if not ai_status['status']:
+        return ''
+    
     # Primero: marca el mensaje como leído
     reply_message(json.dumps({
         'messaging_product': 'whatsapp',
@@ -84,6 +91,8 @@ def manage_flow(message: str, number: str, message_id: str, name: str):
             'body': ai_response
         }
     }))
+
+    return ai_response
 
 
 def get_message(message):

@@ -1,8 +1,9 @@
-from core.app import app
-from flask import request, abort
+from core.app import app, ai_status
+from flask import abort
 from apiflask import APIBlueprint
-from core.schemas.chatbot import VerificationRequest
+from core.schemas.chatbot import AiStatusSchema, VerificationRequest
 from core.schemas.text_message import TextMessageSchema
+from core.schemas.utils import MessageSchema
 from core.services import chatbot
 
 
@@ -29,6 +30,7 @@ def check_token(query_data):
 
 @bp.post('/webhook')
 @bp.input(TextMessageSchema)
+@bp.output(MessageSchema)
 def get_messages(json_data):
     '''Get messages'''
 
@@ -41,7 +43,31 @@ def get_messages(json_data):
         name = contacts['profile']['name']
         message_text = message['text']['body']
         
-        chatbot.manage_flow(message_text, to, message_id, name)
-        return 'Sent'
+        return {'message': chatbot.manage_flow(message_text, to, message_id, name)}
     except Exception as e:
         abort('Not sent ' + str(e))
+
+
+@bp.get('/ai-status')
+@bp.output(AiStatusSchema)
+def get_ai_status():
+    '''Get AI Status'''
+    global ai_status
+
+    try:
+        return {'status': ai_status['status']}
+    except Exception as ex:
+        abort(str(ex))
+
+
+@bp.put('/ai-status')
+@bp.input(AiStatusSchema)
+def set_ai_status(json_data):
+    '''Set AI Status'''
+    global ai_status
+
+    try:
+        ai_status['status'] = json_data['status']
+        return {'message': 'Saved successfully'}
+    except Exception as ex:
+        abort(str(ex))

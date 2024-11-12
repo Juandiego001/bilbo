@@ -29,3 +29,7 @@ chat = model.start_chat()
 
 '''Orders'''
 orders = []
+
+'''AI Status'''
+'''Should be a dict or a list because bool are inmutable'''
+ai_status = {'status': True}

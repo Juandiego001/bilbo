@@ -1,61 +1,123 @@
 <template lang="pug">
 v-container
-  v-row.px-7.py-5
+  div.px-3.py-3.d-flex.align-center
     .text-h5 Pedidos
     v-spacer
+    v-btn.white--text.me-2(icon :class="getColorAi()" @click="aiStatusDialog = true")
+      v-icon {{ getIconAi() }}
     .text-subtitle-1 {{ new Date().toDateString() }}
 
-  v-row.px-7(align="center")
+  div.px-5.py-5.d-flex.align-center(align="center")
     div
-      v-btn.text-capitalize(small) Todos
-      v-btn.text-capitalize.mx-3(small color="primary") Pendientes
-      v-btn.text-capitalize(small) Completados
+      v-btn.text-capitalize(small @click="setOrderStatus('ALL')" :color="orderStatus === 'ALL' ? 'primary' : ''") Todos
+      v-btn.text-capitalize.mx-3(small @click="setOrderStatus('PENDING')" :color="orderStatus === 'PENDING' ? 'info' : ''") Pendientes
+      v-btn.text-capitalize(small @click="setOrderStatus('COMPLETED')" :color="orderStatus === 'COMPLETED' ?'success' : ''") Completados
     v-spacer
-    v-text-field(
-    prepend-icon="mdi-tune"
-    label="Buscar nombre, pedido, o etc"
-    solo
-    dense
-    hide-details
-    append-outer-icon="mdi-magnify"
-    width="50px")
+    v-text-field(prepend-icon="mdi-tune" label="Buscar nombre, pedido, o etc"
+    solo dense hide-details append-outer-icon="mdi-magnify" width="50px")
 
-  v-row.px-7.mb-12
+  //- Diálogo para confirmar la activación/desactivación de la IA
+  v-dialog(v-model="aiStatusDialog" max-width="500px")
+    v-card
+      v-card-title.white--text(:class="getDialogButtonColorIa()")
+        | {{ getDialogTitleIa() }}
+      v-card-text.pt-3.pb-0
+        p {{ getDialogTextIa() }}
+      v-card-actions.pt-0
+        v-spacer
+        v-btn(:class="getDialogButtonColorIa()" @click="updateStatusAi()")
+          | Confirmar
+
+  v-row.px-6.mt-6
     order-card(v-if="orders.length" v-for="order, index in orders"
-    :key="index"
-    :index="index"
-    :name="order.name"
-    :products="order.products"
-    :quantity="order.quantity"
-    :description="order.description"
-    :phone="order.phone"
-    :address="order.address"
-    :paymentMethod="order.payment_method")
-
+    :key="index" :id="order.id" :name="order.name" :products="order.products"
+    :quantity="order.quantity" :description="order.description"
+    :phone="order.phone" :address="order.address" :paymentMethod="order.payment_method"
+    :status="order.status" :getOrders="getOrders")
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
+
 export default {
   name: 'IndexPage',
 
   data: () => ({
-    orders: []
+    orders: [],
+    aiStatus: true,
+    aiStatusDialog: false
   }),
+
+  computed: {
+    orderStatus () {
+      return this.$store.state.orders.orderStatus
+    }
+  },
+
+  watch: {
+    orderStatus () {
+      this.getOrders()
+    }
+  },
 
   beforeMount () {
     this.getOrders()
+    this.getStatusAi()
   },
 
   methods: {
+    ...mapMutations({
+      setOrderStatus: 'orders/setOrderStatus'
+    }),
     async getOrders () {
       try {
-        this.orders = (await this.$axios.$get('/api/orders/orders')).orders
+        this.orders = (
+          await this.$axios.$get(`/api/orders/orders/${this.orderStatus}`)
+        ).orders
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.log(err)
+      }
+    },
+    getIconAi () {
+      return this.aiStatus ? 'mdi-robot' : 'mdi-robot-off'
+    },
+    getColorAi () {
+      return this.aiStatus ? 'primary' : 'error'
+    },
+    // Título de diálogo para determinar si desea activar/desactivar la IA
+    getDialogTitleIa () {
+      return this.aiStatus
+        ? '¿Seguro que desea desactivar la IA?'
+        : '¿Desea volver a activar la IA?'
+    },
+    // Texto de diálogo para determinar lo que sucede al activar/desactivar la IA
+    getDialogTextIa () {
+      return this.aiStatus
+        ? 'Al desactivar la IA, se desactivarán las respuestas automáticas hasta que se vuelva a activar la IA.'
+        : 'Al activar la IA, se activan nuevamente las respuestas automáticas.'
+    },
+    getDialogButtonColorIa () {
+      return this.aiStatus ? 'error' : 'primary'
+    },
+    async getStatusAi () {
+      try {
+        this.aiStatus = (await this.$axios.$get('/api/ai-status')).status
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.log(err)
+      }
+    },
+    async updateStatusAi () {
+      try {
+        await this.$axios.$put('/api/ai-status', { status: !this.aiStatus })
+        await this.getStatusAi()
+        this.aiStatusDialog = false
       } catch (err) {
         // eslint-disable-next-line no-console
         console.log(err)
       }
     }
-
   }
 }
 </script>

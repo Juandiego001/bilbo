@@ -1,0 +1,5 @@
+.env
+*.pdf
+__pycache__
+venv
+active
