@@ -2,6 +2,7 @@
 v-card(width="300px" flat)
   v-card-title
     v-row(dense)
+      //- Primera letra del cliente
       v-col.primary.d-flex.align-center.justify-center.rounded-lg(cols=2)
         span.text-h6.text-center.white--text {{ this.name[0] }}
 
@@ -18,18 +19,22 @@ v-card(width="300px" flat)
         v-icon.px-1(color="white") {{ setIconStatus(status) }}
 
   v-card-text
+    //- Fecha de solicitud de la orden
     div.d-flex.my-2
       .text-body-2 {{ new Date().toDateString() }}
       v-spacer
       .text-body-2 {{ new Date().toLocaleTimeString() }}
 
+    //- Items - Cantidades - Precio individual
     v-data-table(:headers="headers" :items="items" disable-filtering
     disable-pagination disable-sort hide-default-footer dense)
       template(#item.name="{ item }")
         div.d-flex.align-center.text-caption {{ item.name }}
 
+    //- Cálculo de precio total
     div.text-right.mt-2.mb-4.text-subtitle-2 Total: $34000
 
+    //- Estados de la orden
     div.d-flex.justify-space-between
       v-btn.primary.white--text(outlined @click="getDetails()")
         v-icon mdi-eye

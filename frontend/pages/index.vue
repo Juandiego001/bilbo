@@ -21,10 +21,14 @@ v-container
     v-card
       v-card-title.white--text(:class="getDialogButtonColorIa()")
         | {{ getDialogTitleIa() }}
+        v-spacer
+        v-btn.white--text(icon @click="aiStatusDialog=false")
+          v-icon mdi-close
       v-card-text.pt-3.pb-0
         p {{ getDialogTextIa() }}
       v-card-actions.pt-0
         v-spacer
+        v-btn(@click="aiStatusDialog=false") Cancelar
         v-btn(:class="getDialogButtonColorIa()" @click="updateStatusAi()")
           | Confirmar
 
