@@ -1,15 +1,21 @@
 from apiflask import fields, Schema
 
 
-class OrderSchema(Schema):
-  id = fields.String()
+class ProductsSchema(Schema):
+  id = fields.Integer()
   name = fields.String()
-  products = fields.List(fields.String())
-  quantity = fields.List(fields.Integer())
+  price = fields.Number()
+  quantity = fields.Integer()
+
+
+class OrderSchema(Schema):
+  id = fields.Integer()
+  name = fields.String()
   address = fields.String()
   description = fields.String()
   phone = fields.String()
   payment_method = fields.String()
+  products = fields.List(fields.Nested(ProductsSchema))
   created_at = fields.String()
   status = fields.String()
 

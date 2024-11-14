@@ -4,14 +4,14 @@ v-card(width="300px" flat)
     v-row(dense)
       //- Primera letra del cliente
       v-col.primary.d-flex.align-center.justify-center.rounded-lg(cols=2)
-        span.text-h6.text-center.white--text {{ this.name[0] }}
+        span.text-h6.text-center.white--text {{ name[0] }}
 
       v-col.d-flex.align-center.ps-4(cols=8)
         div
           //- Nombre del cliente
-          p.mb-0.text-subtitle-2 {{ this.name }}
+          p.mb-0.text-subtitle-2 {{ name }}
           //- Si se recoge el pedido en el local o para llevar a domicilio
-          p.mb-0.text-caption Pedido {{ `#${this.id}` }} / En local
+          p.mb-0.text-caption Pedido {{ `#${id}` }} / En local
 
       //- Estado del pedido
       v-col.d-flex.align-center.white--text.rounded-lg.justify-center(
@@ -20,19 +20,19 @@ v-card(width="300px" flat)
 
   v-card-text
     //- Fecha de solicitud de la orden
-    div.d-flex.my-2
-      .text-body-2 {{ new Date().toDateString() }}
-      v-spacer
-      .text-body-2 {{ new Date().toLocaleTimeString() }}
+    p.text-body-2.text-justify.my-2 {{ createdAt }}
 
     //- Items - Cantidades - Precio individual
-    v-data-table(:headers="headers" :items="items" disable-filtering
+    v-data-table(:headers="headers" :items="products" disable-filtering
     disable-pagination disable-sort hide-default-footer dense)
       template(#item.name="{ item }")
         div.d-flex.align-center.text-caption {{ item.name }}
+      template(#item.price="{ item }")
+        span {{ `$${item.price.toLocaleString('es-ES')}` }}
 
     //- Cálculo de precio total
-    div.text-right.mt-2.mb-4.text-subtitle-2 Total: $34000
+    div.text-right.mt-2.mb-4.text-subtitle-2
+      | {{ `$${totalPrice.toLocaleString('es-ES')}` }}
 
     //- Estados de la orden
     div.d-flex.justify-space-between
@@ -45,6 +45,7 @@ v-card(width="300px" flat)
       @click="updateOrder(id, 'COMPLETED')")
         v-icon mdi-check-circle-outline
 
+  //- Detalles de la orden
   order-details(v-model="showDetails" :details="details")
 </template>
 
@@ -61,14 +62,6 @@ export default {
       type: String,
       default: ''
     },
-    products: {
-      type: Array,
-      default: new Array([])
-    },
-    quantity: {
-      type: Array,
-      default: new Array([])
-    },
     description: {
       type: String,
       default: ''
@@ -84,6 +77,10 @@ export default {
     paymentMethod: {
       type: String,
       default: ''
+    },
+    products: {
+      type: Array,
+      default: new Array([])
     },
     status: {
       type: String,
@@ -117,17 +114,17 @@ export default {
     headers () {
       return [
         { text: 'Items', value: 'name', align: 'start', class: 'px-0', cellClass: 'px-0' },
-        { text: 'Cantidad', value: 'qty', align: 'center', class: 'px-0', cellClass: 'px-0' },
+        { text: 'Cantidad', value: 'quantity', align: 'center', class: 'px-0', cellClass: 'px-0' },
         { text: 'Precio', value: 'price', align: 'end', class: 'px-0', cellClass: 'px-0' }
       ]
     },
-    items () {
-      return this.products.map((product, i) => (
-        { name: product, qty: this.quantity[i], price: '$12000' }
-      ))
-    },
     orderStatus () {
       return this.$store.state.orders.orderStatus
+    },
+    totalPrice () {
+      return this.products.reduce((total, product) => {
+        return total + Number(product.quantity) * Number(product.price)
+      }, 0)
     }
   },
   methods: {

@@ -33,10 +33,9 @@ v-container
           | Confirmar
 
   v-row.px-6.mt-6
-    order-card(v-if="orders.length" v-for="order, index in orders"
-    :key="index" :id="order.id" :name="order.name" :products="order.products"
-    :quantity="order.quantity" :description="order.description"
-    :phone="order.phone" :address="order.address" :paymentMethod="order.payment_method"
+    order-card(v-if="orders.length" v-for="order, index in orders" :key="index"
+    :id="order.id" :name="order.name" :description="order.description" :phone="order.phone"
+    :address="order.address" :paymentMethod="order.payment_method" :products="order.products"
     :status="order.status" :createdAt="order.created_at" :getOrders="getOrders")
 </template>
 
