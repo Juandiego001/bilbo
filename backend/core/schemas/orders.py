@@ -10,6 +10,7 @@ class OrderSchema(Schema):
   description = fields.String()
   phone = fields.String()
   payment_method = fields.String()
+  created_at = fields.String()
   status = fields.String()
 
 

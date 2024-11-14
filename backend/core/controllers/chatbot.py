@@ -62,6 +62,7 @@ def get_ai_status():
 
 @bp.put('/ai-status')
 @bp.input(AiStatusSchema)
+@bp.output(MessageSchema)
 def set_ai_status(json_data):
     '''Set AI Status'''
     global ai_status

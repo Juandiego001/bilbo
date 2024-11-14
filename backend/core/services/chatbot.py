@@ -1,6 +1,7 @@
 import json
 import re
 import requests
+from datetime import datetime
 from core.app import app, chat, info_logger, error_logger, orders, ai_status
 
 
@@ -24,6 +25,7 @@ def ai_process_message(message: str):
                 recibo_json = json.loads(json_string)
                 '''Added an id to identify the order'''
                 recibo_json['id'] = len(orders) + 1
+                recibo_json['created_at'] = datetime.now().strftime("%a %b %d %Y %I:%M:%S %p")
                 recibo_json['status'] = 'PENDING'
                 info_logger.info(f'JSON generado: {json_string}')
             except json.JSONDecodeError as e:

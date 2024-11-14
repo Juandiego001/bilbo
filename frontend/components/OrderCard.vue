@@ -49,6 +49,8 @@ v-card(width="300px" flat)
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
+
 export default {
   props: {
     id: {
@@ -84,6 +86,10 @@ export default {
       default: ''
     },
     status: {
+      type: String,
+      default: ''
+    },
+    createdAt: {
       type: String,
       default: ''
     },
@@ -125,6 +131,9 @@ export default {
     }
   },
   methods: {
+    ...mapMutations({
+      showSnackbar: 'snackbar/show'
+    }),
     getDetails () {
       this.details.phone = this.phone
       this.details.address = this.address
@@ -134,14 +143,12 @@ export default {
     },
     async updateOrder (id, status) {
       try {
-        const response = await this.$axios.$put(`/api/orders/orders/${id}`,
-          { status })
-        // eslint-disable-next-line no-console
-        console.log(response)
+        const message = (await this.$axios.$put(`/api/orders/orders/${id}`,
+          { status })).message
         this.getOrders()
+        this.showSnackbar({ type: 'success', text: message })
       } catch (err) {
-        // eslint-disable-next-line no-console
-        console.log(err)
+        this.showSnackbar({ type: 'error', text: err.response.data.message })
       }
     },
     setColorStatus (theStatus) {

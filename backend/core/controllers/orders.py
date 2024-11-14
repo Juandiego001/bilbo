@@ -2,7 +2,7 @@ from flask import abort
 from core.app import orders
 from apiflask import APIBlueprint
 from core.schemas.orders import OrderStatusSchema, OrdersSchema
-from core.schemas.text_message import MessageSchema
+from core.schemas.utils import MessageSchema
 
 
 bp = APIBlueprint('orders', __name__)

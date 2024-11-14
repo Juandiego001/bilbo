@@ -37,7 +37,7 @@ v-container
     :key="index" :id="order.id" :name="order.name" :products="order.products"
     :quantity="order.quantity" :description="order.description"
     :phone="order.phone" :address="order.address" :paymentMethod="order.payment_method"
-    :status="order.status" :getOrders="getOrders")
+    :status="order.status" :createdAt="order.created_at" :getOrders="getOrders")
 </template>
 
 <script>
@@ -71,7 +71,8 @@ export default {
 
   methods: {
     ...mapMutations({
-      setOrderStatus: 'orders/setOrderStatus'
+      setOrderStatus: 'orders/setOrderStatus',
+      showSnackbar: 'snackbar/show'
     }),
     async getOrders () {
       try {
@@ -79,8 +80,7 @@ export default {
           await this.$axios.$get(`/api/orders/orders/${this.orderStatus}`)
         ).orders
       } catch (err) {
-        // eslint-disable-next-line no-console
-        console.log(err)
+        this.showSnackbar({ type: 'error', text: err.response.data.message })
       }
     },
     getIconAi () {
@@ -108,18 +108,17 @@ export default {
       try {
         this.aiStatus = (await this.$axios.$get('/api/ai-status')).status
       } catch (err) {
-        // eslint-disable-next-line no-console
-        console.log(err)
+        this.showSnackbar({ type: 'error', text: err.response.data.message })
       }
     },
     async updateStatusAi () {
       try {
-        await this.$axios.$put('/api/ai-status', { status: !this.aiStatus })
+        const message = (await this.$axios.$put('/api/ai-status', { status: !this.aiStatus })).message
         await this.getStatusAi()
         this.aiStatusDialog = false
+        this.showSnackbar({ type: 'success', text: message })
       } catch (err) {
-        // eslint-disable-next-line no-console
-        console.log(err)
+        this.showSnackbar({ type: 'error', text: err.response.data.message })
       }
     }
   }
