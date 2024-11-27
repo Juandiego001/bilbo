@@ -13,8 +13,17 @@ v-container
       v-btn.text-capitalize.mx-3(small @click="setOrderStatus('PENDING')" :color="orderStatus === 'PENDING' ? 'info' : ''") Pendientes
       v-btn.text-capitalize(small @click="setOrderStatus('COMPLETED')" :color="orderStatus === 'COMPLETED' ?'success' : ''") Completados
     v-spacer
-    v-text-field(prepend-icon="mdi-tune" label="Buscar nombre, pedido, o etc"
-    solo dense hide-details append-outer-icon="mdi-magnify" width="50px")
+
+    //- Botón de búsqueda
+    template(v-if="!searched")
+      v-btn(color="primary" small @click="filterDialog=true")
+        v-icon(small) mdi-filter
+        span Filtrar
+    template(v-else)
+      v-badge(color="primary" dot)
+        v-btn(color="primary" small @click="filterDialog=true")
+          v-icon(small) mdi-filter
+          span Filtrar
 
   //- Diálogo para confirmar la activación/desactivación de la IA
   v-dialog(v-model="aiStatusDialog" max-width="500px")
@@ -26,7 +35,7 @@ v-container
           v-icon mdi-close
       v-card-text.pt-3.pb-0
         p {{ getDialogTextIa() }}
-      v-card-actions.pt-0
+      v-card-actions.pt-0.pb-4
         v-spacer
         v-btn(@click="aiStatusDialog=false") Cancelar
         v-btn(:class="getDialogButtonColorIa()" @click="updateStatusAi()")
@@ -37,6 +46,8 @@ v-container
     :id="order.id" :name="order.name" :description="order.description" :phone="order.phone"
     :address="order.address" :paymentMethod="order.payment_method" :products="order.products"
     :status="order.status" :createdAt="order.created_at" :getOrders="getOrders")
+
+  filter-dialog(v-model="filterDialog" @search="getOrders")
 </template>
 
 <script>
@@ -48,12 +59,19 @@ export default {
   data: () => ({
     orders: [],
     aiStatus: true,
-    aiStatusDialog: false
+    aiStatusDialog: false,
+    filterDialog: false
   }),
 
   computed: {
     orderStatus () {
       return this.$store.state.orders.orderStatus
+    },
+    searchData () {
+      return this.$store.state.search.searchData
+    },
+    searched () {
+      return this.$store.state.search.searched
     }
   },
 
@@ -75,9 +93,8 @@ export default {
     }),
     async getOrders () {
       try {
-        this.orders = (
-          await this.$axios.$get(`/api/orders/orders/${this.orderStatus}`)
-        ).orders
+        const params = { status: this.orderStatus, ...this.searchData }
+        this.orders = (await this.$axios.$get('/api/orders/orders', { params })).orders
       } catch (err) {
         this.showSnackbar({ type: 'error', text: err.response.data.message })
       }

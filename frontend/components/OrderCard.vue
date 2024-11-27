@@ -1,5 +1,5 @@
 <template lang="pug">
-v-card(width="300px" flat)
+v-card(width="300px" elevation=10)
   v-card-title
     v-row(dense)
       //- Primera letra del cliente
@@ -55,8 +55,8 @@ import { mapMutations } from 'vuex'
 export default {
   props: {
     id: {
-      type: String,
-      default: ''
+      type: Number,
+      default: 1
     },
     name: {
       type: String,

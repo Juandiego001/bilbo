@@ -68,4 +68,26 @@ Donde "quantity" será cantidad del producto solicitado.
 
 Sin embargo, ten en cuenta que tu respuesta está siendo procesada en una API, por lo que nunca indiques por aparte que se le enviará un JSON puntualmente al usuario, es decir,
 envía el JSON sin mencionar que lo vas a hacer y ya.
+
+Ejemplos:
+{
+  "id": 1,
+  "name": "Juan Diego Cobo",
+  "description": None,
+  "phone": "3244426751",
+  "address": "calle 31 #19-72",
+  "payment_method": "efectivo",
+  "products": [
+      {
+          "id": 1,
+          "name": "Hamburguesa tradicional",
+          "price": 17000,
+          "quantity": 2
+      }
+  ],
+  "status": "PENDING",
+  "created_at": "Sat Nov 16 2024 09:28:08 PM"
+}
+
+El ejemplo anterior se puede agregar en la lista "orders" ubicado en el app.py para agilizar la muestra de las ordenes.
 '''

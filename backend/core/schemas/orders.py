@@ -23,5 +23,17 @@ class OrderSchema(Schema):
 class OrderStatusSchema(Schema):
   status = fields.String()
 
+
 class OrdersSchema(Schema):
   orders = fields.List(fields.Nested(OrderSchema))
+
+
+class OrderQuerySchema(Schema):
+  id = fields.Integer()
+  name = fields.String()
+  phone = fields.String()
+  payment_method = fields.String(data_key='paymentMethod')
+  products = fields.List(fields.Integer())
+  initial_date = fields.String(data_key='initialDate')
+  final_date = fields.String(data_key='finalDate')
+  status = fields.String()

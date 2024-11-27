@@ -28,7 +28,26 @@ model = genai.GenerativeModel("models/gemini-1.5-flash",
 chat = model.start_chat()
 
 '''Orders'''
-orders = []
+orders = [
+    {
+        "id": 1,
+        "name": "Juan Diego Cobo",
+        "description": None,
+        "phone": "3244426751",
+        "address": "calle 31 #19-72",
+        "payment_method": "efectivo",
+        "products": [
+            {
+                "id": 1,
+                "name": "Hamburguesa tradicional",
+                "price": 17000,
+                "quantity": 2
+            }
+        ],
+        "status": "PENDING",
+        "created_at": "Sat Nov 16 2024 09:28:08 PM"
+    }
+]
 
 '''AI Status'''
 '''Should be a dict or a list because bool are inmutable'''
