@@ -45,7 +45,9 @@ Además, finalizado el pedido responde el resumen con formato JSON de la siguien
   "description"
   "phone"
   "address"
-  "payment_method"
+  "cedula"
+  "email"
+  "payment_method"  
 }
 
 Donde "name" tendrá como valor el nombre del cliente.
@@ -54,6 +56,8 @@ Donde "quantity" será un arreglo con la cantidad de cada producto solicitado.
 Donde "description" será un texto de las especificaciones del cliente (Ejemplo: Hamburguesa sin salsas, Hamburguesa sin tomate, Lo recogeré en el local, etc.).
 Donde "phone" será un texto del número de contacto asociado al cliente para notificar.
 Donde "address" será un texto de la dirección del cliente en caso de que desee que se envíe a su casa.
+Donde "cedula" será un número de identificacion del cliente.
+Donde "email" será un texto 
 Donde "payment_method" será un texto entre efectivo, tarjeta o transferencia.
 
 Sin embargo, ten en cuenta que tu respuesta está siendo procesada en una API, por lo que nunca indiques por aparte que se le enviará un JSON puntualmente al usuario, es decir,

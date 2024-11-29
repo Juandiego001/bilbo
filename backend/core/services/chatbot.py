@@ -2,12 +2,15 @@ import json
 import re
 import requests
 from core.app import app, chat, info_logger, error_logger, orders
-
+from core.services.rag import rag 
+from core.services.prompt import prompt
 
 def ai_process_message(message: str):
     '''Process AI response'''
 
     try:
+        content = rag(message)
+        context = prompt(content, message)
         response_text = chat.send_message(message).text
         info_logger.info(f'Response text: {response_text}')
 
@@ -29,6 +32,7 @@ def ai_process_message(message: str):
 
             if recibo_json:
                 orders.append(recibo_json)
+                
                 info_logger.info(f'Recibo almacenado en recibos: {str(orders)}')
 
             response_text = response_text.replace(json_string, '').strip()
