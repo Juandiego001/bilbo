@@ -22,6 +22,7 @@ app.config['WHATSAPP_URL'] = os.getenv('WHATSAPP_URL')
 app.config['WEBHOOK_VERIFY_TOKEN'] = os.getenv('WEBHOOK_VERIFY_TOKEN')
 app.config['DB_PATH'] = os.getenv('DB_PATH')
 app.config['MODEL_NAME'] = os.getenv('MODEL_NAME')
+app.config['DB_URL'] = os.getenv('DB_URL')
 
 '''Gemini AI Configuration'''
 genai.configure(api_key=os.getenv('GEMINI_API'))

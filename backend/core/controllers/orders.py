@@ -25,10 +25,6 @@ def get_orders(query_data: str):
             the_orders = [
                 order for order in orders if order['status'] == status]
 
-        print('\nQUERY DATA:\n')
-        print(query_data)
-        print('\n\n')
-
         '''
         Búsquedas temporales en listas.
         A futuro, las búsquedas se harán directamente con base de datos.
