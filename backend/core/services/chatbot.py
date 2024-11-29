@@ -1,7 +1,8 @@
 import json
 import re
-import requests
-from core.app import app, chat, info_logger, error_logger, orders
+import requests 
+from datetime import datetime
+from core.app import app, chat, info_logger, error_logger, orders, ai_status
 from core.services.rag import rag 
 from core.services.prompt import prompt
 
