@@ -14,9 +14,8 @@ v-app
             .text-h3 {{ errorMessage.code }}
             .text-h6.text--secondary.mb-5 {{ errorMessage.message }}
 
-            V-btn(:color="errorMessage.type" nuxt to="/") Regresar
+            V-btn(:color="errorMessage.type" href="/") Regresar
 
-  app-footer
 </template>
 <script>
 export default {

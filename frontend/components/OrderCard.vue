@@ -1,67 +1,66 @@
 <template lang="pug">
-v-card.mt-8(width="350px" flat)
+v-card(width="300px" elevation=10)
   v-card-title
-    v-row
-      v-col.px-3.py-2.d-flex(cols=2)
-        v-container.primary.rounded-lg.d-flex.align-center.justify-center(fluid)
-          span.text-h6.text-center.white--text {{ this.name[0] }}
-      v-col(cols=10)
-        v-row.py-1.mx-2(align="center")
-          v-col.d-flex.py-0.px-0(cols="12")
-            .text-subtitle-1 {{ this.name }}
-            v-spacer
-            .info.px-2.d-flex.align-center.rounded-lg
-              v-icon.me-2 mdi-check-all
-              span.text-subtitle-2 Ready
+    v-row(dense)
+      //- Primera letra del cliente
+      v-col.primary.d-flex.align-center.justify-center.rounded-lg(cols=2)
+        span.text-h6.text-center.white--text {{ name[0] }}
 
-          v-col.d-flex.align-center.px-0.py-0.pt-2(cols="12")
-            .text-caption Pedido {{ `#${this.index + 1}` }} / En local
-            v-spacer
-            v-sheet.green.rounded-lg.me-2(width=10 height=10)
-            .text-caption Ready to serve
+      v-col.d-flex.align-center.ps-4(cols=8)
+        div
+          //- Nombre del cliente
+          p.mb-0.text-subtitle-2 {{ name }}
+          //- Si se recoge el pedido en el local o para llevar a domicilio
+          p.mb-0.text-caption Pedido {{ `#${id}` }} / En local
 
-    v-row.px-5.py-2
-      .text-body-2 {{ new Date().toDateString() }}
-      v-spacer
-      .text-body-2 {{ new Date().toLocaleTimeString() }}
+      //- Estado del pedido
+      v-col.d-flex.align-center.white--text.rounded-lg.justify-center(
+      :class="setColorStatus(status)" cols=2)
+        v-icon.px-1(color="white") {{ setIconStatus(status) }}
 
-  v-card-text.px-2
-      v-data-table(:headers="headers" :items="items" disable-filtering
-      disable-pagination disable-sort hide-default-footer dense)
+  v-card-text
+    //- Fecha de solicitud de la orden
+    p.text-body-2.text-justify.my-2 {{ createdAt }}
 
-      v-row.px-8.pt-6.pb-4
-        .text-subtitle-1.black--text Total
-        v-spacer
-        .text-subtitle-1.black--text $34000
+    //- Items - Cantidades - Precio individual
+    v-data-table(:headers="headers" :items="products" disable-filtering
+    disable-pagination disable-sort hide-default-footer dense)
+      template(#item.name="{ item }")
+        div.d-flex.align-center.text-caption {{ item.name }}
+      template(#item.price="{ item }")
+        span {{ `$${item.price.toLocaleString('es-ES')}` }}
 
-  v-row.justify-center
-      v-btn.text-subtitle-1.text-capitalize(@click="getDetails()")
-        | Ver detalles
-      .mx-2
-      v-btn.text-subtitle-1.text-capitalize(color="primary") Completado
+    //- Cálculo de precio total
+    div.text-right.mt-2.mb-4.text-subtitle-2
+      | {{ `$${totalPrice.toLocaleString('es-ES')}` }}
 
-  order-details(v-model="showDetails"
-  :details="details")
+    //- Estados de la orden
+    div.d-flex.justify-space-between
+      v-btn.primary.white--text(outlined @click="getDetails()")
+        v-icon mdi-eye
+      v-btn.info.white--text(outlined :disabled="status === 'PENDING'"
+      @click="updateOrder(id, 'PENDING')")
+        v-icon mdi-timer-sand
+      v-btn.success.white--text(outlined :disabled="status === 'COMPLETED'"
+      @click="updateOrder(id, 'COMPLETED')")
+        v-icon mdi-check-circle-outline
+
+  //- Detalles de la orden
+  order-details(v-model="showDetails" :details="details")
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
+
 export default {
   props: {
-    index: {
+    id: {
       type: Number,
       default: 1
     },
     name: {
       type: String,
       default: ''
-    },
-    products: {
-      type: Array,
-      default: new Array([])
-    },
-    quantity: {
-      type: Array,
-      default: new Array([])
     },
     description: {
       type: String,
@@ -78,6 +77,22 @@ export default {
     paymentMethod: {
       type: String,
       default: ''
+    },
+    products: {
+      type: Array,
+      default: new Array([])
+    },
+    status: {
+      type: String,
+      default: ''
+    },
+    createdAt: {
+      type: String,
+      default: ''
+    },
+    getOrders: {
+      type: Function,
+      default: () => {}
     }
   },
   data: () => ({
@@ -90,26 +105,58 @@ export default {
     }
   }),
   computed: {
+    statuses () {
+      return {
+        PENDING: 'Pendiente',
+        COMPLETED: 'Completado'
+      }
+    },
     headers () {
       return [
-        { text: 'Items', value: 'name', align: 'start' },
-        { text: 'Cantidad', value: 'qty', align: 'center' },
-        { text: 'Precio', value: 'price', align: 'center' }
+        { text: 'Items', value: 'name', align: 'start', class: 'px-0', cellClass: 'px-0' },
+        { text: 'Cantidad', value: 'quantity', align: 'center', class: 'px-0', cellClass: 'px-0' },
+        { text: 'Precio', value: 'price', align: 'end', class: 'px-0', cellClass: 'px-0' }
       ]
     },
-    items () {
-      return this.products.map((product, i) => (
-        { name: product, qty: this.quantity[i], price: '$12000' }
-      ))
+    orderStatus () {
+      return this.$store.state.orders.orderStatus
+    },
+    totalPrice () {
+      return this.products.reduce((total, product) => {
+        return total + Number(product.quantity) * Number(product.price)
+      }, 0)
     }
   },
   methods: {
+    ...mapMutations({
+      showSnackbar: 'snackbar/show'
+    }),
     getDetails () {
       this.details.phone = this.phone
       this.details.address = this.address
       this.details.paymentMethod = this.paymentMethod
       this.details.description = this.description
       this.showDetails = true
+    },
+    async updateOrder (id, status) {
+      try {
+        const message = (await this.$axios.$put(`/api/orders/orders/${id}`,
+          { status })).message
+        this.getOrders()
+        this.showSnackbar({ type: 'success', text: message })
+      } catch (err) {
+        this.showSnackbar({ type: 'error', text: err.response.data.message })
+      }
+    },
+    setColorStatus (theStatus) {
+      return theStatus === 'PENDING'
+        ? 'info'
+        : 'success'
+    },
+    setIconStatus (theStatus) {
+      return theStatus === 'PENDING'
+        ? 'mdi-timer-sand'
+        : 'mdi-check-circle-outline'
     }
   }
 }

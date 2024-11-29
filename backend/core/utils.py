@@ -40,26 +40,58 @@ Además, finalizado el pedido responde el resumen con formato JSON de la siguien
 
 {
   "name"
-  "products"
-  "quantity"
   "description"
   "phone"
   "address"
   "cedula"
   "email"
   "payment_method"  
+  "products"
 }
 
 Donde "name" tendrá como valor el nombre del cliente.
-Donde "products" será un arreglo del nombre de cada producto solicitado por el cliente, donde los nombres de los productos no se deben repetir.
-Donde "quantity" será un arreglo con la cantidad de cada producto solicitado.
 Donde "description" será un texto de las especificaciones del cliente (Ejemplo: Hamburguesa sin salsas, Hamburguesa sin tomate, Lo recogeré en el local, etc.).
 Donde "phone" será un texto del número de contacto asociado al cliente para notificar.
 Donde "address" será un texto de la dirección del cliente en caso de que desee que se envíe a su casa.
 Donde "cedula" será un número de identificacion del cliente.
 Donde "email" será un texto 
 Donde "payment_method" será un texto entre efectivo, tarjeta o transferencia.
+Donde "products" será un arreglo de objetos que se compone de la siguiente manera:
+
+{
+  "id"
+  "name"
+  "price"
+  "quantity"
+}
+
+Donde "id" será un entero auto incremental asociado al número de productos.
+Donde "name" será el nombre del producto con base en lo mencionado anteriormente.
+Donde "price" será el precio del producto con base en lo mencionado anteriormente.
+Donde "quantity" será cantidad del producto solicitado.
 
 Sin embargo, ten en cuenta que tu respuesta está siendo procesada en una API, por lo que nunca indiques por aparte que se le enviará un JSON puntualmente al usuario, es decir,
 envía el JSON sin mencionar que lo vas a hacer y ya.
+
+Ejemplos:
+{
+  "id": 1,
+  "name": "Juan Diego Cobo",
+  "description": None,
+  "phone": "3244426751",
+  "address": "calle 31 #19-72",
+  "payment_method": "efectivo",
+  "products": [
+      {
+          "id": 1,
+          "name": "Hamburguesa tradicional",
+          "price": 17000,
+          "quantity": 2
+      }
+  ],
+  "status": "PENDING",
+  "created_at": "Sat Nov 16 2024 09:28:08 PM"
+}
+
+El ejemplo anterior se puede agregar en la lista "orders" ubicado en el app.py para agilizar la muestra de las ordenes.
 '''
