@@ -2,7 +2,7 @@ import os
 from apiflask import APIFlask
 from dotenv import load_dotenv
 import google.generativeai as genai
-from core.utils import instruction
+
 import logging
 import logging.config
 
@@ -26,10 +26,9 @@ app.config['DB_URL'] = os.getenv('DB_URL')
 
 '''Gemini AI Configuration'''
 genai.configure(api_key=os.getenv('GEMINI_API'))
-model = genai.GenerativeModel("models/gemini-1.5-flash",
-                              system_instruction=instruction)
+model = genai.GenerativeModel("models/gemini-1.5-flash")
 chat = model.start_chat()
-
+print('chat:',chat)
 '''Orders'''
 orders = [
     {

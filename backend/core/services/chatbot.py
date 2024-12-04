@@ -6,6 +6,9 @@ from core.app import app, chat, info_logger, error_logger, orders, ai_status
 from core.services.rag import rag 
 from core.services.prompt import prompt
 
+# def start_new_chat_session():
+#     return model.start_chat()
+
 def ai_process_message(message: str):
     '''Process AI response'''
 
