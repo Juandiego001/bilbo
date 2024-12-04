@@ -5,17 +5,19 @@ from datetime import datetime
 from core.app import app, chat, info_logger, error_logger, orders, ai_status
 from core.services.rag import rag 
 from core.services.prompt import prompt
+import threading
 
 # def start_new_chat_session():
 #     return model.start_chat()
 
-def ai_process_message(message: str):
+messages_buffer = {}
+def ai_process_message(message: str, number: str):
     '''Process AI response'''
 
     try:
         content = rag(message)
         context = prompt(content, message)
-        response_text = chat.send_message(message).text
+        response_text = chat.send_message(context).text
         info_logger.info(f'Response text: {response_text}')
 
         if '`' in response_text:
@@ -50,11 +52,19 @@ def ai_process_message(message: str):
         error_logger.exception(f'Error al procesar el mensaje: {e}')
         response_text = 'Lo siento, no puedo procesar tu solicitud en este momento.'
     finally:
-        return response_text
+        reply_message(json.dumps({
+            'messaging_product': 'whatsapp',
+            'recipient_type': 'individual',
+            'to': number,
+            'type': 'text',
+            'text': {
+                'body': response_text
+            }
+        }))
 
 
 def reply_message(data):
-    '''Function that send messages or controll the messages to WhatsApp Clients'''
+    '''Function that send messages or control the messages to WhatsApp Clients'''
 
     try:
         response = requests.post(
@@ -87,21 +97,18 @@ def manage_flow(message: str, number: str, message_id: str, name: str):
         'message_id':  message_id
     }))
 
-    # Segundo: genera la respuesta de la IA
-    ai_response = ai_process_message(message)
+    # Segundo: Se agrega el mensaje en messages_buffer
+    if number in messages_buffer:
+        messages_buffer[number].append((message, message_id))
+    else:
+        messages_buffer[number] = [(message, message_id)]
 
-    # Tercero: envia la respuesta de la IA
-    reply_message(json.dumps({
-        'messaging_product': 'whatsapp',
-        'recipient_type': 'individual',
-        'to': number,
-        'type': 'text',
-        'text': {
-            'body': ai_response
-        }
-    }))
 
-    return ai_response
+    # Tercero: genera la respuesta de la IA con base en los mensajes del usuario
+    # almacenados en messages_buffer
+    threading.Timer(
+        5, ai_process_message(' '.join(messages_buffer[number]), number)
+    ).start()
 
 
 def get_message(message):

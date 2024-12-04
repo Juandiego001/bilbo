@@ -1,15 +1,7 @@
 from typing import Any, Dict
-from sqlalchemy import QueuePool, create_engine, inspect
-from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import text
 from sqlalchemy.exc import SQLAlchemyError
-from core.app import app
-
-
-
-DB_URL = app.config['DB_URL']
-engine = create_engine(DB_URL, poolclass=QueuePool, pool_size=5, max_overflow=10)
-Session = sessionmaker(bind=engine)
+from core.app import Session
 
 
 def insert_product(data: Dict[str, Any]) -> Dict[str, Any]:
