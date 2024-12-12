@@ -1,15 +1,8 @@
+from core.app import Session
 from typing import Any, Dict
-from sqlalchemy import QueuePool, create_engine, inspect
-from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import text
 from sqlalchemy.exc import SQLAlchemyError
-from core.app import app
 
-
-
-DB_URL = app.config['DB_URL']
-engine = create_engine(DB_URL, poolclass=QueuePool, pool_size=5, max_overflow=10)
-Session = sessionmaker(bind=engine)
 
 def get_product_info_by_name(product_name: str) -> Dict[str, Any]:
     # Realiza una consulta a la base de datos para obtener el id y el precio
@@ -21,6 +14,7 @@ def get_product_info_by_name(product_name: str) -> Dict[str, Any]:
         if product:
             return {'id_producto': product[0], 'price': product[1]}
         return None
+
 
 def insert_order(data: Dict[str, Any]) -> Dict[str, Any]:
     try:
@@ -107,6 +101,7 @@ def insert_order(data: Dict[str, Any]) -> Dict[str, Any]:
         print({"message": "Error al crear la orden", "error": str(e), "status": "error"})
         return {"message": "Error al crear la orden", "error": str(e), "status": "error"}
 
+
 def update_order_status(id_pedido, data):
     try:
         with Session() as session:
@@ -133,6 +128,7 @@ def update_order_status(id_pedido, data):
     except SQLAlchemyError as e:
         print(f"Error al actualizar el estado del pedido: {e}")
         return {"message": "Error al actualizar el estado del pedido", "error": str(e), "status": "error"}
+
 
 def delete_order(id_pedido):
     try:

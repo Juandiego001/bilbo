@@ -1,11 +1,8 @@
 from langchain_chroma import Chroma
 from langchain_huggingface.embeddings import HuggingFaceEmbeddings
-from core.app import app
+from core.app import MODEL_NAME, DB_PATH
 
-def rag (user_query:str ):
-    MODEL_NAME = app.config["MODEL_NAME"]
-    DB_PATH = app.config["DB_PATH"]
-
+def rag(user_query: str):
     # Crear los embeddings
     embeddings = HuggingFaceEmbeddings(model_name=MODEL_NAME)
 
@@ -17,6 +14,5 @@ def rag (user_query:str ):
 
     retrieved_docs = retriever.invoke(user_query)
 
-    context = " ".join([doc.page_content for doc in retrieved_docs])
-    
+    context = ' '.join([doc.page_content for doc in retrieved_docs])
     return(context)

@@ -10,7 +10,10 @@ import threading
 # def start_new_chat_session():
 #     return model.start_chat()
 
+'''Messages from all users'''
 messages_buffer = {}
+
+
 def ai_process_message(message: str, number: str):
     '''Process AI response'''
 
@@ -41,13 +44,13 @@ def ai_process_message(message: str, number: str):
                 recibo_json = None
 
             if recibo_json:
-                orders.append(recibo_json)
-                
+                orders.append(recibo_json)                
                 info_logger.info(f'Recibo almacenado en recibos: {str(orders)}')
 
             response_text = response_text.replace(json_string, '').strip()
         else:
-            info_logger.info(f'No se encontró un JSON válido en la respuesta: {response_text}')
+            info_logger.info(f'No se encontró un JSON válido en la respuesta')
+            info_logger.info(response_text)
     except Exception as e:
         error_logger.exception(f'Error al procesar el mensaje: {e}')
         response_text = 'Lo siento, no puedo procesar tu solicitud en este momento.'
@@ -90,12 +93,14 @@ def manage_flow(message: str, number: str, message_id: str, name: str):
     if not ai_status['status']:
         return ''
     
-    # Primero: marca el mensaje como leído
-    reply_message(json.dumps({
-        'messaging_product': 'whatsapp',
-        'status': 'read',
-        'message_id':  message_id
-    }))
+    # Primero: marca el mensaje como leído si el message_id es diferente
+    # de <WHATSAPP_MESSAGE_ID>
+    if message_id != '<WHATSAPP_MESSAGE_ID>':
+        reply_message(json.dumps({
+            'messaging_product': 'whatsapp',
+            'status': 'read',
+            'message_id':  message_id
+        }))
 
     # Segundo: Se agrega el mensaje en messages_buffer
     if number in messages_buffer:
@@ -106,8 +111,10 @@ def manage_flow(message: str, number: str, message_id: str, name: str):
 
     # Tercero: genera la respuesta de la IA con base en los mensajes del usuario
     # almacenados en messages_buffer
-    threading.Timer(
-        5, ai_process_message(' '.join(messages_buffer[number]), number)
+    threading.Timer(5, ai_process_message,
+        kwargs={
+            'message': ' '.join(message for message, id in messages_buffer[number]),
+            'number': number}
     ).start()
 
 

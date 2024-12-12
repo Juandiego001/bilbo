@@ -42,8 +42,9 @@ def get_messages(json_data):
         contacts = value['contacts'][0]
         name = contacts['profile']['name']
         message_text = message['text']['body']
-        
-        return {'message': chatbot.manage_flow(message_text, to, message_id, name)}
+
+        chatbot.manage_flow(message_text, to, message_id, name)
+        return {'message': 'Mensaje enviado'}
     except Exception as e:
         abort('Not sent ' + str(e))
 
