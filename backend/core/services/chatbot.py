@@ -1,26 +1,46 @@
 import json
 import re
-import requests 
+import requests
 from datetime import datetime
-from core.app import app, chat, info_logger, error_logger, orders, ai_status
-from core.services.rag import rag 
+from core.app import app, model, info_logger, error_logger, orders, ai_status
+from core.services.rag import rag
 from core.services.prompt import prompt
 import threading
 
-# def start_new_chat_session():
-#     return model.start_chat()
-
-'''Messages from all users'''
+# Buffer global para almacenar mensajes por número
 messages_buffer = {}
+timers = {}  # Diccionario para manejar timers por número
+chat_sessions = {}
+lock = threading.Lock()
 
+def get_or_create_chat_session(number):
+    """Obtiene o crea una sesión de chat para un usuario específico."""
+    global chat_sessions
+    with lock:
+        if number not in chat_sessions:
+            chat_sessions[number] = model.start_chat()
+        return chat_sessions[number]
 
-def ai_process_message(message: str, number: str):
-    '''Process AI response'''
+def ai_process_message(number: str):
+    '''Procesar y enviar mensajes acumulados'''
+    global messages_buffer, timers
+
+    if number not in messages_buffer:
+        return
+
+    combined_message = " ".join([msg for msg, _ in messages_buffer[number]])
 
     try:
-        content = rag(message)
-        context = prompt(content, message)
+        # Procesamiento de IA
+        
+        content = rag(combined_message)
+        context = prompt(content, combined_message)
+        print('combined_message: ',combined_message)
+        chat = get_or_create_chat_session(number)
         response_text = chat.send_message(context).text
+        
+        print('response_text: ',response_text)
+
         info_logger.info(f'Response text: {response_text}')
 
         if '`' in response_text:
@@ -51,10 +71,14 @@ def ai_process_message(message: str, number: str):
         else:
             info_logger.info(f'No se encontró un JSON válido en la respuesta')
             info_logger.info(response_text)
+        # Enviar respuesta consolidada
+        #reply_message(number, response_text)
     except Exception as e:
-        error_logger.exception(f'Error al procesar el mensaje: {e}')
+        error_logger.exception(f"Error al procesar mensajes: {e}")
         response_text = 'Lo siento, no puedo procesar tu solicitud en este momento.'
+        #reply_message(number, "Lo siento, no pude procesar tu solicitud.")
     finally:
+        # Limpiar buffer y timer
         reply_message(json.dumps({
             'messaging_product': 'whatsapp',
             'recipient_type': 'individual',
@@ -64,6 +88,35 @@ def ai_process_message(message: str, number: str):
                 'body': response_text
             }
         }))
+        messages_buffer[number] = []
+        timers[number] = None
+
+
+def manage_flow(message: str, number: str, message_id: str, name: str):
+    '''Acumula mensajes y activa un temporizador'''
+    global messages_buffer, timers
+    
+    if not ai_status['status']:
+        return ''
+    
+    # Primero: marca el mensaje como leído si el message_id es diferente
+    # de <WHATSAPP_MESSAGE_ID>
+    if message_id != '<WHATSAPP_MESSAGE_ID>':
+        reply_message(json.dumps({
+            'messaging_product': 'whatsapp',
+            'status': 'read',
+            'message_id':  message_id
+        }))
+    # Agregar mensaje al buffer
+    if number in messages_buffer:
+        messages_buffer[number].append((message, message_id))
+    else:
+        messages_buffer[number] = [(message, message_id)]
+
+    # Iniciar temporizador si no existe
+    if number not in timers or timers[number] is None:
+        timers[number] = threading.Timer(5, ai_process_message, [number])
+        timers[number].start()
 
 
 def reply_message(data):
@@ -84,39 +137,6 @@ def reply_message(data):
     except Exception as ex:
         error_logger.exception(f'Error while trying do reply_message: {str(ex)}')
         raise ex
-
-
-def manage_flow(message: str, number: str, message_id: str, name: str):
-    '''Manage flow from a received'''
-
-    # Si la IA no está activa se envía un mensaje vacío
-    if not ai_status['status']:
-        return ''
-    
-    # Primero: marca el mensaje como leído si el message_id es diferente
-    # de <WHATSAPP_MESSAGE_ID>
-    if message_id != '<WHATSAPP_MESSAGE_ID>':
-        reply_message(json.dumps({
-            'messaging_product': 'whatsapp',
-            'status': 'read',
-            'message_id':  message_id
-        }))
-
-    # Segundo: Se agrega el mensaje en messages_buffer
-    if number in messages_buffer:
-        messages_buffer[number].append((message, message_id))
-    else:
-        messages_buffer[number] = [(message, message_id)]
-
-
-    # Tercero: genera la respuesta de la IA con base en los mensajes del usuario
-    # almacenados en messages_buffer
-    threading.Timer(5, ai_process_message,
-        kwargs={
-            'message': ' '.join(message for message, id in messages_buffer[number]),
-            'number': number}
-    ).start()
-
 
 def get_message(message):
     '''Verify message send by user'''
