@@ -35,11 +35,11 @@ def ai_process_message(number: str):
         
         content = rag(combined_message)
         context = prompt(content, combined_message)
-        print('combined_message: ',combined_message)
+        #print('combined_message: ',combined_message)
         chat = get_or_create_chat_session(number)
         response_text = chat.send_message(context).text
-        
-        print('response_text: ',response_text)
+        #print('chat: ', chat)
+        #print('response_text: ',response_text)
 
         info_logger.info(f'Response text: {response_text}')
 
@@ -115,6 +115,10 @@ def manage_flow(message: str, number: str, message_id: str, name: str):
 
     # Iniciar temporizador si no existe
     if number not in timers or timers[number] is None:
+        timers[number] = threading.Timer(5, ai_process_message, [number])
+        timers[number].start()
+    else: # Reiniciar temporizador
+        timers[number].cancel()
         timers[number] = threading.Timer(5, ai_process_message, [number])
         timers[number].start()
 
