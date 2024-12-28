@@ -1,5 +1,5 @@
 from sqlalchemy.sql import text
-from langchain_chroma import Chroma
+from langchain_community.vectorstores import Chroma
 from langchain.schema import Document
 from sqlalchemy.exc import SQLAlchemyError
 from langchain_huggingface.embeddings import HuggingFaceEmbeddings

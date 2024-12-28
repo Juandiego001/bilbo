@@ -1,4 +1,4 @@
-from langchain_chroma import Chroma
+from langchain_community.vectorstores import Chroma
 from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 from core.app import MODEL_NAME, DB_PATH
 
