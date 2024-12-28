@@ -94,7 +94,6 @@ posthog==3.7.4
 propcache==0.2.1
 proto-plus==1.25.0
 protobuf==5.29.2
-psycopg2==2.9.10
 pyasn1==0.6.1
 pyasn1_modules==0.4.1
 pydantic==2.10.4
