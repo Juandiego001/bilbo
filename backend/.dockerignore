@@ -1,0 +1,7 @@
+venv
+activate
+.env
+__pycache__
+logs
+.venv
+chroma_db
