@@ -118,6 +118,7 @@ pyparsing==3.2.0
 PyPika==0.48.9
 pyproject_hooks==1.2.0
 pyreadline3==3.5.4
+pysqlite3-binary==0.5.4
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 PyYAML==6.0.2

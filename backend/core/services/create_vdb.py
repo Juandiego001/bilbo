@@ -1,3 +1,8 @@
+# For Fixing Missing SQLite3 Version
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
 from sqlalchemy.sql import text
 from langchain_community.vectorstores import Chroma
 from langchain.schema import Document

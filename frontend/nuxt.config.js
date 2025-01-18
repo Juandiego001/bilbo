@@ -1,4 +1,8 @@
 export default {
+  target: 'static',
+  server: {
+    host: '0.0.0.0'
+  },
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     titleTemplate: '%s - billos-orders',
