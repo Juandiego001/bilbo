@@ -32,14 +32,20 @@ def ai_process_message(number: str):
 
     try:
         # Procesamiento de IA
+        chat = get_or_create_chat_session(number)
         
         content = rag(combined_message)
         context = prompt(content, combined_message)
+        chat.history.append({"role": "user", "parts": combined_message})
+        
+        # print('chat history ah',chat.history)
         #print('combined_message: ',combined_message)
-        chat = get_or_create_chat_session(number)
+        
         response_text = chat.send_message(context).text
+        #print('aqui')
+        chat.history.append({"role": "model", "parts": response_text})
         #print('chat: ', chat)
-        #print('response_text: ',response_text)
+        # print('response_text: ',response_text)
 
         info_logger.info(f'Response text: {response_text}')
 
