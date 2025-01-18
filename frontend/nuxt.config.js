@@ -51,7 +51,7 @@ export default {
 
   proxy: {
     '/api/': {
-      target: process.env.API_URL || 'http://localhost:5000', pathRewrite: { '^/api/': '' }
+      target: process.env.API_URL || 'http://localhost:5000'
     }
   },
 
