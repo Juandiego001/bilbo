@@ -4,9 +4,9 @@ from core.controllers.orders import bp as bp_orders
 from core.controllers.products import bp as bp_products
 
 
-app.register_blueprint(bp_chatbot, url_prefix='/')
-app.register_blueprint(bp_orders, url_prefix='/orders')
-app.register_blueprint(bp_products, url_prefix='/products')
+app.register_blueprint(bp_chatbot, url_prefix='/api/chatbot')
+app.register_blueprint(bp_orders, url_prefix='/api/orders')
+app.register_blueprint(bp_products, url_prefix='/api/products')
 
 
 if __name__ == '__main__':

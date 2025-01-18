@@ -1,4 +1,8 @@
 export default {
+  target: 'static',
+  server: {
+    host: '0.0.0.0'
+  },
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     titleTemplate: '%s - billos-orders',
@@ -46,8 +50,8 @@ export default {
   },
 
   proxy: {
-    '/api/': {
-      target: process.env.API_URL || 'http://localhost:5000', pathRewrite: { '^/api/': '' }
+    '/api': {
+      target: process.env.API_URL || 'http://localhost:5000'
     }
   },
 

@@ -122,14 +122,14 @@ export default {
     },
     async getStatusAi () {
       try {
-        this.aiStatus = (await this.$axios.$get('/api/ai-status')).status
+        this.aiStatus = (await this.$axios.$get('/api/chatbot/ai-status')).status
       } catch (err) {
         this.showSnackbar({ type: 'error', text: err.response.data.message })
       }
     },
     async updateStatusAi () {
       try {
-        const message = (await this.$axios.$put('/api/ai-status', { status: !this.aiStatus })).message
+        const message = (await this.$axios.$put('/api/chatbot/ai-status', { status: !this.aiStatus })).message
         await this.getStatusAi()
         this.aiStatusDialog = false
         this.showSnackbar({ type: 'success', text: message })

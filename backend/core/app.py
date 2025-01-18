@@ -10,7 +10,6 @@ from sqlalchemy import QueuePool, create_engine
 from core.utils import instruction
 
 
-
 load_dotenv()
 
 
