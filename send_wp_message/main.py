@@ -13,7 +13,7 @@ load_dotenv(dotenv_path)
 
 API_PORT = os.getenv('API_PORT')
 WP_NUMBER = os.getenv('WP_NUMBER')
-FULL_URL = f'http://localhost:{API_PORT}/webhook'
+FULL_URL = f'http://localhost:{API_PORT}/api/chatbot/webhook'
 
 def check_env_vars() -> None:
     '''Function to verify if the environment variables are setted'''

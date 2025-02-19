@@ -1,4 +1,4 @@
-from core.app import app, ai_status
+from core.app import app, ai_status, info_logger, error_logger
 from flask import abort
 from apiflask import APIBlueprint
 from core.schemas.chatbot import AiStatusSchema, VerificationRequest
@@ -22,9 +22,10 @@ def check_token(query_data):
 
         if (mode == "subscribe" and verify_token == app.config['WEBHOOK_VERIFY_TOKEN']):
             return challenge
-        else:
-            raise Exception()
-    except:
+        
+        raise Exception()
+    except Exception as ex:
+        error_logger.exception(f'There was an error with the /api/chatbot/webhook endpoint: {str(ex)}')
         abort(403)
 
 
@@ -36,15 +37,19 @@ def get_messages(json_data):
 
     try:
         value = json_data['entry'][0]['changes'][0]['value']
-        message = value['messages'][0]
-        to = message['from']
-        message_id = message['id']
+        message_obj = value['messages'][0]
+        number = message_obj['from']
+        message_id = message_obj['id']
         contacts = value['contacts'][0]
         name = contacts['profile']['name']
-        message_text = message['text']['body']
+        message = message_obj['text']['body']
 
-        chatbot.manage_flow(message_text, to, message_id, name)
-        return {'message': 'Mensaje enviado'}
+        response = chatbot.manage_flow(message, number, message_id, name)
+
+        info_logger.info(f'Number: {number} Message: {message}')
+        info_logger.info(f'To: {number} AI Response: {response}')
+
+        return {'message': response}
     except Exception as e:
         abort('Not sent ' + str(e))
 
@@ -53,6 +58,7 @@ def get_messages(json_data):
 @bp.output(AiStatusSchema)
 def get_ai_status():
     '''Get AI Status'''
+
     global ai_status
 
     try:
@@ -66,6 +72,7 @@ def get_ai_status():
 @bp.output(MessageSchema)
 def set_ai_status(json_data):
     '''Set AI Status'''
+    
     global ai_status
 
     try:
